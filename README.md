@@ -12,9 +12,10 @@ For exemple with TicTic store with 48.3858100,-4.4893840 (GPS)
 
 In the discord channel:
 - Connect yourself with `connexion`
+- The bot is On by default but you can turn it off with `off` then On with `on`
 - Add a favorite store with `add:48.3858100,-4.4893840`
 - Remove a favorite store with `remove:48.3858100,-4.4893840`
-- Get your favorite store with `get stores`
+- Get your favorite store with `favorite`
 
 The bot will send you a notification when a basket is free in your favorites stores.
 
