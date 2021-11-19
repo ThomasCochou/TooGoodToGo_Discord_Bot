@@ -35,7 +35,7 @@ class MyClient(discord.Client):
 			response = self.tgtg_client.get_items()
 		except Exception as e:
 			print(e)
-			self.channel.send("Exception.")
+			await self.channel.send(str(e))
 			self.exception = True
 
 		new_msg = list()
@@ -78,7 +78,7 @@ class MyClient(discord.Client):
 				response = self.tgtg_client.login()
 			except Exception as e:
 				print(e)
-				self.channel.send("Exception.")
+				self.channel.send(str(e))
 				self.exception = True
 			
 			if response == None :
@@ -138,7 +138,7 @@ class MyClient(discord.Client):
 					response = self.tgtg_client.get_items()
 				except Exception as e:
 					print(e)
-					self.channel.send("Exception.")
+					self.channel.send(str(e))
 					self.exception = True
 
 				i = 0
@@ -171,7 +171,7 @@ class MyClient(discord.Client):
 				self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=True)
 			except Exception as e:
 				print(e)
-				self.channel.send("Exception.")
+				self.channel.send(str(e))
 				self.exception = True
 
 			await message.channel.send(str(response[0]["store"]["store_name"])+" added".format(message))
@@ -200,7 +200,7 @@ class MyClient(discord.Client):
 				self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=False)
 			except Exception as e:
 				print(e)
-				self.channel.send("Exception.")
+				self.channel.send(str(e))
 				self.exception = True
 		
 			await message.channel.send(str(response[0]["store"]["store_name"])+" removed".format(message))
