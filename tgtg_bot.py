@@ -22,6 +22,8 @@ class MyClient(discord.Client):
 		self.channel = self.get_channel(id=general_channel_id)
 		self.sleeping = False
 		self.exception = False
+		self.focus = list()
+		self.favorite= list()
 
 	def create_tgtg_client(self,tgtg_client):
 		self.tgtg_client=tgtg_client
@@ -46,7 +48,12 @@ class MyClient(discord.Client):
 			
 	async def send_new_basket(self,new_msg):
 		for msg in new_msg :
-			await self.channel.send(msg)
+			if self.focus :
+				for focused_store in self.focus :
+					if focused_store.split("# ")[1] == msg.split(" have")[0]:
+						await self.channel.send(msg)
+			else :
+				await self.channel.send(msg)
 
 	async def get_last_msg(self):
 		last_msg = list()
@@ -87,21 +94,56 @@ class MyClient(discord.Client):
 			await self.clear()
 			await message.channel.send("Bot off.".format(message))
 
+		if message.content.startswith('focus'):
+			await self.clear()
+
+			focused_store_id = message.content.split(" ")[1]
+
+			if self.favorite :
+				for favorite in self.favorite :
+					if favorite.split("#")[0] == focused_store_id :
+						self.focus.append(favorite)
+						await message.channel.send(str(favorite)+" focused.".format(message))
+			else :
+				await message.channel.send("You need to call favorite first.".format(message))
+
+			self.sleeping = False
+
+		if message.content.startswith('unfocus'):
+			await self.clear()
+
+			focused_store_id = message.content.split(" ")[1]
+
+			for favorite in self.favorite :
+				if favorite.split("#")[0] == focused_store_id :
+					self.focus.remove(favorite)
+					await message.channel.send(str(favorite)+" unfocused.".format(message))
+
+			self.sleeping = False
+
+
 		if message.content.startswith('favorite'):
 			if self.sleeping == False :
 				self.sleeping = True
 
 			await self.clear()
 
-			try:
-				response = self.tgtg_client.get_items()
-			except Exception as e:
-				print(e)
-				self.channel.send("Exception.")
-				self.exception = True
+			if self.favorite :
+				for favorite in self.favorite :
+					await message.channel.send(favorite.format(message))
+			else :
+				try:
+					response = self.tgtg_client.get_items()
+				except Exception as e:
+					print(e)
+					self.channel.send("Exception.")
+					self.exception = True
 
-			for store in response : 
-				await message.channel.send(str(store["store"]["store_name"]).format(message))
+				i = 0
+				for store in response :
+					self.favorite.append(str(i)+"# "+str(store["store"]["store_name"]))
+					await message.channel.send(str(i)+"# "+str(store["store"]["store_name"]).format(message))
+					i += 1
 
 		if message.content.startswith("add"):
 			if self.sleeping == False :
@@ -109,8 +151,10 @@ class MyClient(discord.Client):
 
 			await self.clear()
 
-			latitude = message.content.split(":")[1].split(',')[0]
-			longitude = message.content.split(":")[1].split(',')[1]
+			self.favorite = list()
+
+			latitude = message.content.split(" ")[1].split(',')[0]
+			longitude = message.content.split(" ")[1].split(',')[1]
 
 			response = self.tgtg_client.get_items(
 				favorites_only=False,
@@ -136,8 +180,10 @@ class MyClient(discord.Client):
 
 			await self.clear()
 
-			latitude = message.content.split(":")[1].split(',')[0]
-			longitude = message.content.split(":")[1].split(',')[1]
+			self.favorite = list()
+
+			latitude = message.content.split(" ")[1].split(',')[0]
+			longitude = message.content.split(" ")[1].split(',')[1]
 
 			response = self.tgtg_client.get_items(
 				favorites_only=False,
@@ -168,7 +214,7 @@ class MyCog(commands.Cog):
 	def cog_unload(self):
 		self.printer.cancel()
 
-	@tasks.loop(seconds=150.0)
+	@tasks.loop(seconds=5.0)
 	async def printer(self):
 		if self.discord_client.sleeping == False and self.discord_client.exception == False:
 			self.index += 1
