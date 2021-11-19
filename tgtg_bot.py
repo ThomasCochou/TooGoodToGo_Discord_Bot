@@ -21,12 +21,19 @@ class MyClient(discord.Client):
 		print('------')
 		self.channel = self.get_channel(id=general_channel_id)
 		self.sleeping = False
+		self.exception = False
 
 	def create_tgtg_client(self,tgtg_client):
 		self.tgtg_client=tgtg_client
 
 	async def check_new_basket(self):
-		response = self.tgtg_client.get_items()
+		try:
+			response = self.tgtg_client.get_items()
+		except Exception as e:
+			print(e)
+			self.channel.send("Exception.")
+			self.exception = True
+
 		new_msg = list()
 
 		for store in response:
@@ -58,9 +65,13 @@ class MyClient(discord.Client):
 			return
 
 		if message.content.startswith('connexion'):
+			try:
+				response = self.tgtg_client.login()
+			except Exception as e:
+				print(e)
+				self.channel.send("Exception.")
+				self.exception = True
 			
-			response = self.tgtg_client.login()
-
 			if response == None :
 				await message.channel.send("Connected.".format(message))
 			else :
@@ -68,6 +79,7 @@ class MyClient(discord.Client):
 
 		if message.content.startswith('on'):
 			self.sleeping = False
+			self.exception = False
 			await message.channel.send("Bot on.".format(message))
 
 		if message.content.startswith('off'):
@@ -81,7 +93,12 @@ class MyClient(discord.Client):
 
 			await self.clear()
 
-			response = self.tgtg_client.get_items()
+			try:
+				response = self.tgtg_client.get_items()
+			except Exception as e:
+				print(e)
+				self.channel.send("Exception.")
+				self.exception = True
 
 			for store in response : 
 				await message.channel.send(str(store["store"]["store_name"]).format(message))
@@ -104,7 +121,12 @@ class MyClient(discord.Client):
 			print("store_name: "+str(response[0]["store"]["store_name"]))
 			print("store_id: "+str(response[0]['item']['item_id']))
 
-			self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=True)
+			try:
+				self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=True)
+			except Exception as e:
+				print(e)
+				self.channel.send("Exception.")
+				self.exception = True
 
 			await message.channel.send(str(response[0]["store"]["store_name"])+" added".format(message))
 
@@ -126,8 +148,13 @@ class MyClient(discord.Client):
 			print("store_name: "+str(response[0]["store"]["store_name"]))
 			print("store_id: "+str(response[0]['item']['item_id']))
 
-			self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=False)
-
+			try:
+				self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=False)
+			except Exception as e:
+				print(e)
+				self.channel.send("Exception.")
+				self.exception = True
+		
 			await message.channel.send(str(response[0]["store"]["store_name"])+" removed".format(message))
 
 
@@ -141,9 +168,9 @@ class MyCog(commands.Cog):
 	def cog_unload(self):
 		self.printer.cancel()
 
-	@tasks.loop(seconds=3.0)
+	@tasks.loop(seconds=150.0)
 	async def printer(self):
-		if self.discord_client.sleeping == False :
+		if self.discord_client.sleeping == False and self.discord_client.exception == False:
 			self.index += 1
 			last_msg = await self.discord_client.get_last_msg()
 			new_msg = await self.discord_client.check_new_basket()
