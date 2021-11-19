@@ -13,6 +13,8 @@ tgtg_client = TgtgClient(access_token=TGTG_TOKEN, refresh_token=TGTG_REFRESH_TOK
 
 general_channel_id = 910191399733952566
 
+fetch_API_seconds = 300.0
+
 class MyClient(discord.Client):
 	async def on_ready(self):
 		print('Logged in as')
@@ -214,7 +216,7 @@ class MyCog(commands.Cog):
 	def cog_unload(self):
 		self.printer.cancel()
 
-	@tasks.loop(seconds=5.0)
+	@tasks.loop(seconds=fetch_API_seconds)
 	async def printer(self):
 		if self.discord_client.sleeping == False and self.discord_client.exception == False:
 			self.index += 1
