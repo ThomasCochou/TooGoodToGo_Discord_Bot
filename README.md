@@ -22,4 +22,14 @@ The bot will send you a notification when a basket is free in your favorites sto
 
 ## Output
 
-![alt text](https://github.com/ThomasCochou/TooGoodToGo_Discord_Bot/blob/main/exemple%20screen.png?raw=true)
+Favorite
+
+![alt text](https://github.com/ThomasCochou/TooGoodToGo_Discord_Bot/blob/main/exemple%20favorite.png?raw=true)
+
+Focus
+
+![alt text](https://github.com/ThomasCochou/TooGoodToGo_Discord_Bot/blob/main/exemple%20focus.png?raw=true)
+
+Available
+
+![alt text](https://github.com/ThomasCochou/TooGoodToGo_Discord_Bot/blob/main/exemple%20basket.png?raw=true)
