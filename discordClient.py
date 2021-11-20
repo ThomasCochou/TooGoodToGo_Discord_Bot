@@ -1,4 +1,5 @@
 import discord
+from storeTgtg import storeTgtg
 
 brest_channel_id = 910191399733952566
 
@@ -25,32 +26,47 @@ class discordClient(discord.Client):
 			await self.channel.send(str(e))
 			self.exception = True
 
-		new_msg = list()
+		update_favorite= list()
 
+		print(self.focus)
+
+		i = 0
 		for store in response:
-			if store["items_available"] == 1 :
-				new_msg.append(str(store["store"]["store_name"])+" have "+str(store["items_available"])+" basket available.")
-			elif store["items_available"] >= 1 :
-				new_msg.append(str(store["store"]["store_name"])+" have "+str(store["items_available"])+" baskets available.")
+			update_favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
+			i += 1
 
-		return(new_msg)
+		if self.favorite :
+			i = 0
+			for store in self.favorite :
+				if update_favorite[i].index != store.index :
+					print("here")
+					self.favorite = update_favorite
+
+					return True
+				i += 1
+
+		self.favorite = update_favorite
+
+		print(update_favorite[0].availability)
+		print(self.favorite[0].availability)
+		return False
+
 			
-	async def send_new_basket(self,new_msg):
-		for msg in new_msg :
+			
+	async def send_new_basket(self):
+		for store in self.favorite :
 			if self.focus :
 				for focused_store in self.focus :
-					if focused_store.split("# ")[1] == msg.split(" have")[0]:
-						await self.channel.send(msg)
+					if focused_store == store :
+						if int(store.availability) == 1 :
+							await self.channel.send(store.name+" have "+store.availability+" basket available.")
+						elif int(store.availability) >= 1 :
+							await self.channel.send(store.name+" have "+store.availability+" baskets available.")
 			else :
-				await self.channel.send(msg)
-
-	async def get_last_msg(self):
-		last_msg = list()
-		async for msg in self.channel.history():
-			last_msg.append(msg.content)
-
-		last_msg.reverse()
-		return(last_msg)
+				if int(store.availability) == 1 :
+					await self.channel.send(store.name+" have "+store.availability+" basket available.")
+				elif int(store.availability) >= 1 :
+					await self.channel.send(store.name+" have "+store.availability+" baskets available.")
 
 	async def clear(self):
 		async for msg in self.channel.history():
@@ -89,10 +105,10 @@ class discordClient(discord.Client):
 			focused_store_id = message.content.split(" ")[1]
 
 			if self.favorite :
-				for favorite in self.favorite :
-					if favorite.split("#")[0] == focused_store_id :
-						self.focus.append(favorite)
-						await message.channel.send(str(favorite)+" focused.".format(message))
+				for store in self.favorite :
+					if store.index == focused_store_id :
+						self.focus.append(store)
+						await message.channel.send(store.name+" focused.".format(message))
 			else :
 				await message.channel.send("You need to call favorite first.".format(message))
 
@@ -103,10 +119,13 @@ class discordClient(discord.Client):
 
 			focused_store_id = message.content.split(" ")[1]
 
-			for favorite in self.favorite :
-				if favorite.split("#")[0] == focused_store_id :
-					self.focus.remove(favorite)
-					await message.channel.send(str(favorite)+" unfocused.".format(message))
+			if self.favorite :
+				for store in self.favorite :
+					if store.index == focused_store_id :
+						self.focus.remove(store)
+						await message.channel.send(store.name+" unfocused.".format(message))
+			else :
+				await message.channel.send("You need to call favorite first.".format(message))
 
 			self.sleeping = False
 
@@ -118,8 +137,8 @@ class discordClient(discord.Client):
 			await self.clear()
 
 			if self.favorite :
-				for favorite in self.favorite :
-					await message.channel.send(favorite.format(message))
+				for store in self.favorite :
+					await message.channel.send(store.index+"# "+store.name.format(message))
 			else :
 				try:
 					response = self.tgtg_client.get_items()
@@ -130,8 +149,8 @@ class discordClient(discord.Client):
 
 				i = 0
 				for store in response :
-					self.favorite.append(str(i)+"# "+str(store["store"]["store_name"]))
-					await message.channel.send(str(i)+"# "+str(store["store"]["store_name"]).format(message))
+					self.favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
+					await message.channel.send(self.favorite[i].format(message))
 					i += 1
 
 		if message.content.startswith("add"):
@@ -151,8 +170,6 @@ class discordClient(discord.Client):
 				longitude=longitude,
 				radius=1,
 				)
-			print("store_name: "+str(response[0]["store"]["store_name"]))
-			print("store_id: "+str(response[0]['item']['item_id']))
 
 			try:
 				self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=True)
