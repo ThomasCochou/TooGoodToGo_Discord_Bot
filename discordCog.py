@@ -15,7 +15,6 @@ class discordCog(commands.Cog):
 	async def printer(self):
 		if self.discord_client.sleeping == False and self.discord_client.exception == False:
 			self.index += 1
-			# last_msg = await self.discord_client.get_last_msg()
 			update_favorite = await self.discord_client.check_new_basket()
 
 			if update_favorite :

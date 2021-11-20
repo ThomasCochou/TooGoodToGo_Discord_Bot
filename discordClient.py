@@ -22,34 +22,35 @@ class discordClient(discord.Client):
 		try:
 			response = self.tgtg_client.get_items()
 		except Exception as e:
-			print(e)
-			await self.channel.send(str(e))
+			print("check_new_basket: "+str(e))
+			await self.channel.send("check_new_basket: "+str(e))
 			self.exception = True
 
-		update_favorite= list()
+		if self.exception == False:
+			update_favorite= list()
 
-		print(self.focus)
+			print(self.focus)
 
-		i = 0
-		for store in response:
-			update_favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
-			i += 1
-
-		if self.favorite :
 			i = 0
-			for store in self.favorite :
-				if update_favorite[i].index != store.index :
-					print("here")
-					self.favorite = update_favorite
-
-					return True
+			for store in response:
+				update_favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
 				i += 1
 
-		self.favorite = update_favorite
+			if self.favorite :
+				i = 0
+				for store in self.favorite :
+					if update_favorite[i].index != store.index :
+						print("here")
+						self.favorite = update_favorite
 
-		print(update_favorite[0].availability)
-		print(self.favorite[0].availability)
-		return False
+						return True
+					i += 1
+
+			self.favorite = update_favorite
+
+			print(update_favorite[0].availability)
+			print(self.favorite[0].availability)
+			return False
 
 			
 			
@@ -80,14 +81,12 @@ class discordClient(discord.Client):
 			try:
 				response = self.tgtg_client.login()
 			except Exception as e:
-				print(e)
-				self.channel.send(str(e))
+				print("connexion: "+str(e))
+				await self.channel.send("connexion: "+str(e))
 				self.exception = True
 			
-			if response == None :
+			if self.exception == False :
 				await message.channel.send("Connected.".format(message))
-			else :
-				await message.channel.send(str(response).format(message))
 
 		if message.content.startswith('on'):
 			self.sleeping = False
@@ -143,15 +142,16 @@ class discordClient(discord.Client):
 				try:
 					response = self.tgtg_client.get_items()
 				except Exception as e:
-					print(e)
-					self.channel.send(str(e))
+					print("favorite: "+str(e))
+					await self.channel.send("favorite: "+str(e))
 					self.exception = True
 
-				i = 0
-				for store in response :
-					self.favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
-					await message.channel.send(self.favorite[i].format(message))
-					i += 1
+				if self.exception == False :
+					i = 0
+					for store in response :
+						self.favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
+						await message.channel.send(self.favorite[i].format(message))
+						i += 1
 
 		if message.content.startswith("add"):
 			if self.sleeping == False :
@@ -174,11 +174,12 @@ class discordClient(discord.Client):
 			try:
 				self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=True)
 			except Exception as e:
-				print(e)
-				self.channel.send(str(e))
+				print("add: "+str(e))
+				await self.channel.send("add: "+str(e))
 				self.exception = True
 
-			await message.channel.send(str(response[0]["store"]["store_name"])+" added".format(message))
+			if self.exception == False :
+				await message.channel.send(str(response[0]["store"]["store_name"])+" added".format(message))
 
 		if message.content.startswith("remove"):
 			if self.sleeping == False :
@@ -203,9 +204,10 @@ class discordClient(discord.Client):
 			try:
 				self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=False)
 			except Exception as e:
-				print(e)
-				self.channel.send(str(e))
+				print("remove: "+str(e))
+				await self.channel.send("remove: "+str(e))
 				self.exception = True
-		
-			await message.channel.send(str(response[0]["store"]["store_name"])+" removed".format(message))
+
+			if self.exception == False:
+				await message.channel.send(str(response[0]["store"]["store_name"])+" removed".format(message))
 
