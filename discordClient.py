@@ -81,17 +81,17 @@ class discordClient(discord.Client):
 				self.exception = True
 			
 			if self.exception == False :
-				await message.channel.send("Connected.".format(message))
+				await self.channel.send("Connected.")
 
 		if message.content.startswith('on'):
 			self.sleeping = False
 			self.exception = False
-			await message.channel.send("Bot on.".format(message))
+			await self.channel.send("Bot on.")
 
 		if message.content.startswith('off'):
 			self.sleeping = True
 			await self.clear()
-			await message.channel.send("Bot off.".format(message))
+			await self.channel.send("Bot off.")
 
 		if message.content.startswith('focus'):
 			await self.clear()
@@ -102,9 +102,9 @@ class discordClient(discord.Client):
 				for store in self.favorite :
 					if store.index == focused_store_id :
 						self.focus.append(store)
-						await message.channel.send(store.name+" focused.".format(message))
+						await self.channel.send(store.name+" focused.")
 			else :
-				await message.channel.send("You need to call favorite first.".format(message))
+				await self.channel.send("You need to call favorite first.")
 
 			self.sleeping = False
 
@@ -117,9 +117,9 @@ class discordClient(discord.Client):
 				for store in self.favorite :
 					if store.index == focused_store_id :
 						self.focus.remove(store)
-						await message.channel.send(store.name+" unfocused.".format(message))
+						await self.channel.send(store.name+" unfocused.")
 			else :
-				await message.channel.send("You need to call favorite first.".format(message))
+				await self.channel.send("You need to call favorite first.")
 
 			self.sleeping = False
 
@@ -132,7 +132,7 @@ class discordClient(discord.Client):
 
 			if self.favorite :
 				for store in self.favorite :
-					await message.channel.send(store.index+"# "+store.name.format(message))
+					await self.channel.send(store.index+"# "+store.name)
 			else :
 				try:
 					response = self.tgtg_client.get_items()
@@ -145,7 +145,7 @@ class discordClient(discord.Client):
 					i = 0
 					for store in response :
 						self.favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
-						await message.channel.send(self.favorite[i].index+"# "+self.favorite[i].name.format(message))
+						await self.channel.send(self.favorite[i].index+"# "+self.favorite[i].name)
 						i += 1
 
 		if message.content.startswith("add"):
@@ -175,7 +175,7 @@ class discordClient(discord.Client):
 
 			if self.exception == False :
 				self.favorite = list()
-				await message.channel.send(str(response[0]["store"]["store_name"])+" added".format(message))
+				await self.channel.send(str(response[0]["store"]["store_name"])+" added")
 
 		if message.content.startswith("remove"):
 			if self.sleeping == False :
@@ -204,5 +204,5 @@ class discordClient(discord.Client):
 
 			if self.exception == False:
 				self.favorite = list()
-				await message.channel.send(str(response[0]["store"]["store_name"])+" removed".format(message))
+				await self.channel.send(str(response[0]["store"]["store_name"])+" removed")
 
