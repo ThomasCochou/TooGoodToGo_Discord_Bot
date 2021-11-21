@@ -47,7 +47,10 @@ class discordClient(discord.Client):
 
 			return False
 
-			
+	async def send_focus(self):
+		for store in self.focus:
+			await self.channel.send(store.name+" focus.")
+
 			
 	async def send_new_basket(self):
 		for store in self.favorite :
@@ -94,7 +97,6 @@ class discordClient(discord.Client):
 			await self.channel.send("Bot off.")
 
 		if message.content.startswith('focus'):
-			await self.clear()
 
 			focused_store_id = message.content.split(" ")[1]
 
@@ -109,7 +111,6 @@ class discordClient(discord.Client):
 			self.sleeping = False
 
 		if message.content.startswith('unfocus'):
-			await self.clear()
 
 			focused_store_id = message.content.split(" ")[1]
 
@@ -123,6 +124,15 @@ class discordClient(discord.Client):
 
 			self.sleeping = False
 
+		if message.content.startswith("get focus"):
+			if self.focus :
+				await self.send_focus()
+			else :
+				await self.channel.send("No focus.")
+
+		if message.content.startswith("clear focus"):
+			self.focus= list()
+			await self.channel.send("Focus clear.")
 
 		if message.content.startswith('favorite'):
 			if self.sleeping == False :
