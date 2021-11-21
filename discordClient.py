@@ -19,12 +19,7 @@ class discordClient(discord.Client):
 		self.tgtg_client=tgtg_client
 
 	async def check_new_basket(self):
-		try:
-			response = self.tgtg_client.get_items()
-		except Exception as e:
-			print("check_new_basket: "+str(e))
-			await self.channel.send("check_new_basket: "+str(e))
-			self.exception = True
+		response = await self.tgtg_get_items()
 
 		if self.exception == False:
 			update_favorite= list()
@@ -42,10 +37,11 @@ class discordClient(discord.Client):
 
 						return True
 					i += 1
+				return False
 
-			self.favorite = update_favorite
-
-			return False
+			else: 
+				self.favorite = update_favorite
+				return True
 
 	async def send_focus(self):
 		for store in self.focus:
@@ -84,10 +80,10 @@ class discordClient(discord.Client):
 		try:
 			response = self.tgtg_client.get_items()
 		except Exception as e:
-			print("favorite: "+str(e))
-			await self.channel.send("favorite: "+str(e))
+			print("tgtg_get_items: "+str(e))
+			await self.channel.send("tgtg_get_items: "+str(e))
 			self.exception = True
-		return 
+		return response
 
 	async def tgtg_set_favorite(self,favorite):
 		try:
@@ -123,7 +119,6 @@ class discordClient(discord.Client):
 			self.exception = False
 			await self.clear()
 			await self.send_new_basket()
-			await self.channel.send("Bot on.")
 
 		if msg.startswith('off'):
 			self.sleeping = True
@@ -180,7 +175,7 @@ class discordClient(discord.Client):
 			else :
 				if self.exception == False :
 					i = 0
-					response = self.tgtg_get_items()
+					response = await self.tgtg_get_items()
 					for store in response :
 						self.favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
 						await self.channel.send(self.favorite[i].index+"# "+self.favorite[i].name)
@@ -204,7 +199,7 @@ class discordClient(discord.Client):
 				radius=1,
 				)
 
-			self.tgtg_set_favorite(favorite[0])
+			await self.tgtg_set_favorite(favorite[0])
 
 			if self.exception == False :
 				self.favorite = list()
@@ -228,7 +223,7 @@ class discordClient(discord.Client):
 				radius=1,
 				)
 
-			self.tgtg_remove_favorite(favorite[0])
+			await self.tgtg_remove_favorite(favorite[0])
 
 			if self.exception == False:
 				self.favorite = list()
