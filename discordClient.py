@@ -180,7 +180,7 @@ class discordClient(discord.Client):
 			else :
 				if self.exception == False :
 					i = 0
-					response = self.tgtg_get_items()
+					await response = self.tgtg_get_items()
 					for store in response :
 						self.favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
 						await self.channel.send(self.favorite[i].index+"# "+self.favorite[i].name)
@@ -204,7 +204,7 @@ class discordClient(discord.Client):
 				radius=1,
 				)
 
-			self.tgtg_set_favorite(favorite[0])
+			await self.tgtg_set_favorite(favorite[0])
 
 			if self.exception == False :
 				self.favorite = list()
@@ -228,7 +228,7 @@ class discordClient(discord.Client):
 				radius=1,
 				)
 
-			self.tgtg_remove_favorite(favorite[0])
+			await self.tgtg_remove_favorite(favorite[0])
 
 			if self.exception == False:
 				self.favorite = list()

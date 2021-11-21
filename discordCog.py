@@ -1,6 +1,6 @@
 from discord.ext import tasks, commands
 
-fetch_API_seconds=300.0
+fetch_API_seconds=3.0
 
 class discordCog(commands.Cog):
 	def __init__(self, discord_client):
@@ -18,6 +18,7 @@ class discordCog(commands.Cog):
 			update_favorite = await self.discord_client.check_new_basket()
 
 			if update_favorite :
+				print("send new basket")
 				await self.discord_client.clear()
 				await self.discord_client.send_new_basket()
 
