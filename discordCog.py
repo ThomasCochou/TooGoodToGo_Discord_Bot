@@ -1,6 +1,6 @@
 from discord.ext import tasks, commands
 
-fetch_API_seconds=5.0
+fetch_API_seconds=300.0
 
 class discordCog(commands.Cog):
 	def __init__(self, discord_client):

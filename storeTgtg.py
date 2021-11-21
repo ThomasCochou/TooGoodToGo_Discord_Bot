@@ -1,5 +1,5 @@
 class storeTgtg():
-	def __init__(self,index,name,availability):
+	def __init__(self,index,name,items_available):
 		self.index = index
 		self.name = name
-		self.availability = availability
+		self.items_available = items_available

@@ -29,8 +29,6 @@ class discordClient(discord.Client):
 		if self.exception == False:
 			update_favorite= list()
 
-			print(self.focus)
-
 			i = 0
 			for store in response:
 				update_favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
@@ -39,8 +37,7 @@ class discordClient(discord.Client):
 			if self.favorite :
 				i = 0
 				for store in self.favorite :
-					if update_favorite[i].index != store.index :
-						print("here")
+					if update_favorite[i].items_available != store.items_available :
 						self.favorite = update_favorite
 
 						return True
@@ -48,8 +45,6 @@ class discordClient(discord.Client):
 
 			self.favorite = update_favorite
 
-			print(update_favorite[0].availability)
-			print(self.favorite[0].availability)
 			return False
 
 			
@@ -58,16 +53,16 @@ class discordClient(discord.Client):
 		for store in self.favorite :
 			if self.focus :
 				for focused_store in self.focus :
-					if focused_store == store :
-						if int(store.availability) == 1 :
-							await self.channel.send(store.name+" have "+store.availability+" basket available.")
-						elif int(store.availability) >= 1 :
-							await self.channel.send(store.name+" have "+store.availability+" baskets available.")
+					if focused_store.name == store.name :
+						if int(store.items_available) == 1 :
+							await self.channel.send(store.name+" have "+store.items_available+" basket available.")
+						elif int(store.items_available) >= 1 :
+							await self.channel.send(store.name+" have "+store.items_available+" baskets available.")
 			else :
-				if int(store.availability) == 1 :
-					await self.channel.send(store.name+" have "+store.availability+" basket available.")
-				elif int(store.availability) >= 1 :
-					await self.channel.send(store.name+" have "+store.availability+" baskets available.")
+				if int(store.items_available) == 1 :
+					await self.channel.send(store.name+" have "+store.items_available+" basket available.")
+				elif int(store.items_available) >= 1 :
+					await self.channel.send(store.name+" have "+store.items_available+" baskets available.")
 
 	async def clear(self):
 		async for msg in self.channel.history():
@@ -150,7 +145,7 @@ class discordClient(discord.Client):
 					i = 0
 					for store in response :
 						self.favorite.append(storeTgtg(str(i),store["store"]["store_name"],str(store["items_available"])))
-						await message.channel.send(self.favorite[i].format(message))
+						await message.channel.send(self.favorite[i].index+"# "+self.favorite[i].name.format(message))
 						i += 1
 
 		if message.content.startswith("add"):
@@ -179,6 +174,7 @@ class discordClient(discord.Client):
 				self.exception = True
 
 			if self.exception == False :
+				self.favorite = list()
 				await message.channel.send(str(response[0]["store"]["store_name"])+" added".format(message))
 
 		if message.content.startswith("remove"):
@@ -198,8 +194,6 @@ class discordClient(discord.Client):
 				longitude=longitude,
 				radius=1,
 				)
-			print("store_name: "+str(response[0]["store"]["store_name"]))
-			print("store_id: "+str(response[0]['item']['item_id']))
 
 			try:
 				self.tgtg_client.set_favorite(item_id=response[0]['item']['item_id'], is_favorite=False)
@@ -209,5 +203,6 @@ class discordClient(discord.Client):
 				self.exception = True
 
 			if self.exception == False:
+				self.favorite = list()
 				await message.channel.send(str(response[0]["store"]["store_name"])+" removed".format(message))
 
