@@ -1,7 +1,5 @@
 from tgtg import TgtgClient
-import discord
 from decouple import config
-from discord.ext import tasks, commands
 
 import discordClient
 import discordCog

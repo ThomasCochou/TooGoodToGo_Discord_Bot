@@ -15,12 +15,11 @@ class discordCog(commands.Cog):
 	async def printer(self):
 		if self.discord_client.sleeping == False and self.discord_client.exception == False:
 			self.index += 1
-			last_msg = await self.discord_client.get_last_msg()
-			new_msg = await self.discord_client.check_new_basket()
+			update_favorite = await self.discord_client.check_new_basket()
 
-			if last_msg != new_msg :
+			if update_favorite :
 				await self.discord_client.clear()
-				await self.discord_client.send_new_basket(new_msg)
+				await self.discord_client.send_new_basket()
 
 	@printer.before_loop
 	async def before_printer(self):
