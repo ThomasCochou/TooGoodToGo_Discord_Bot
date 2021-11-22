@@ -1,6 +1,6 @@
 # tgtg_bot
 
-Too good to go bot to notify via Discord when a basket is free using Heroku servers.
+Too good to go bot to notify new basket via Discord using Heroku servers.
 
 ## How to init ?
 
