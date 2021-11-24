@@ -35,3 +35,7 @@ Focus
 Available
 
 ![alt text](https://github.com/ThomasCochou/TooGoodToGo_Discord_Bot/blob/main/exemple%20basket.png?raw=true)
+
+## UserFlow goal
+
+![alt text](https://github.com/ThomasCochou/TooGoodToGo_Discord_Bot/blob/main/userflow_1.jpg?raw=true)
