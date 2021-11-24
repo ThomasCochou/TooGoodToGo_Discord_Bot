@@ -22,6 +22,12 @@ In the discord channel:
 
 The bot will send you a notification when a basket is free in your favorites stores.
 
+## Next step
+
+- Uses of discord buttons
+- Adapt to userflow goal
+- Userfriendly bot
+
 ## Output
 
 Favorite
