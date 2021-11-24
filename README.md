@@ -28,6 +28,8 @@ The bot will send you a notification when a basket is free in your favorites sto
 - Adapt to userflow goal
 - Userfriendly bot
 
+- Uses of slashes commands: `On april 2022 every single verified bot will be required to use slashes as commands.`
+
 ## Output
 
 Favorite
