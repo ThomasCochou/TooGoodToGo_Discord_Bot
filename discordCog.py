@@ -25,3 +25,4 @@ class discordCog(commands.Cog):
 	async def before_printer(self):
 		print('waiting...')
 		await self.discord_client.wait_until_ready()
+		await self.discord_client.tgtg_connexion()
