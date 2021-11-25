@@ -24,6 +24,7 @@ The bot will send you a notification when a basket is free in your favorites sto
 
 ## Next steps
 
+- Randomize fetch API
 - Uses of discord buttons
 - Adapt to userflow goal
 - Userfriendly bot
