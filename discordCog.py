@@ -4,7 +4,6 @@ fetch_API_seconds=300.0
 
 class discordCog(commands.Cog):
 	def __init__(self, discord_client):
-		self.index = 0
 		self.discord_client = discord_client
 		self.printer.start()
 
@@ -13,8 +12,8 @@ class discordCog(commands.Cog):
 
 	@tasks.loop(seconds=fetch_API_seconds)
 	async def printer(self):
-		if self.discord_client.sleeping == False and self.discord_client.exception == False:
-			self.index += 1
+		if self.discord_client.sleeping == False :
+
 			update_favorite = await self.discord_client.check_new_basket()
 
 			if update_favorite :
@@ -25,4 +24,4 @@ class discordCog(commands.Cog):
 	async def before_printer(self):
 		print('waiting...')
 		await self.discord_client.wait_until_ready()
-		await self.discord_client.tgtg_connexion()
+		await self.discord_client.tgtg_client.connexion()
